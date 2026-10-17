@@ -774,6 +774,7 @@ Energia:
 <button onclick="exportarFicha()">Baixar ficha</button>
 <input type="file" id="importarArquivo" style="display:none" onchange="importarFicha(event)">
 <button onclick="document.getElementById('importarArquivo').click()">Importar ficha</button>
+<button type="button" id="limparFichaBtn" style="border-color: var(--line); color: var(--text-dim);">Limpar ficha</button>
 </div>
 <p class="arquivo-nota">A ficha é salva automaticamente neste navegador enquanto você edita. Use "Baixar ficha" para guardar uma cópia de backup ou levar o personagem para outro aparelho.</p>
 </div>
@@ -1575,6 +1576,24 @@ document.getElementById("cropCancelar").addEventListener("click", fecharCrop);
 document.addEventListener("keydown", e => {
     if (e.key === "Escape" && !document.getElementById("cropModal").hidden) fecharCrop();
 });
+
+function limparFicha() {
+    const ok = confirm("Limpar a ficha inteira? Isso apaga todos os dados e a foto deste personagem.\n\nSe quiser guardar uma cópia, cancele e use \"Baixar ficha\" antes.");
+    if (!ok) return;
+
+    const campos = {};
+    document.querySelectorAll("[data-key]").forEach(el => {
+        campos[el.dataset.key] = el.defaultValue;
+    });
+
+    aplicarEstado({ campos, pericias: {}, poderes: [], habilidades: [], objetivos: [], foto: "" });
+
+    historico = [];
+    renderizarHistorico();
+
+    agendarSalvamento();
+}
+document.getElementById("limparFichaBtn").addEventListener("click", limparFicha);
 
 popularSelectPericias();
 document.getElementById("rolPericia").addEventListener("change", atualizarInfoPericia);
